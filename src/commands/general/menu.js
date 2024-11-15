@@ -55,8 +55,8 @@ module.exports = {
         const paginatedCommands = commands.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
 
         paginatedCommands.forEach(cmd => {
-          response += `╭────────${cmd.name}─────────╮\n│  ❏  description: ${cmd.description}\n`;
-          if (cmd.usage) response += `│  ❏  Usage: ${cmd.usage}\n╰─────────༺♡༻────────╯\n`;
+          response += `╭────────${cmd.name}─────────╮\n│  ❏  𝗗𝗲𝘀𝗰𝗿𝗶𝗽𝘁𝗶𝗼𝗻: ${cmd.description}\n`;
+          if (cmd.usage) response += `│  ❏  𝗨𝘀𝗮𝗴𝗲: ${cmd.usage}\n╰─────────༺♡༻────────╯\n`;
         });
 
         response += `\n├───────────────────────────❍\n`;
