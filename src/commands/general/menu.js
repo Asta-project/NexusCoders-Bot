@@ -14,13 +14,13 @@ module.exports = {
     if (args[0] === 'category') {
       menuType = 'category';
       await sock.sendMessage(message.key.remoteJid, {
-        text: 'Successfully set to category view.',
+        text: '🛸𝘀𝘂𝗰𝗰𝗲𝘀𝘀𝗳𝘂𝗹𝗹𝘆 𝘀𝗲𝘁 𝗰𝗮𝘁𝗲𝗴𝗼𝗿𝘆 𝘃𝗶𝗲𝘄',
         detectLinks: true
       }, { quoted: message });
     } else if (args[0] === 'list') {
       menuType = 'list';
       await sock.sendMessage(message.key.remoteJid, {
-        text: 'Successfully set to list view.',
+        text: '🚀𝘀𝘂𝗰𝗰𝗲𝘀𝗳𝘂𝗹𝗹𝘆 𝘀𝗲𝘁 𝗹𝗶𝘀𝘁 𝘃𝗶𝗲𝘄',
         detectLinks: true
       }, { quoted: message });
     } else {
