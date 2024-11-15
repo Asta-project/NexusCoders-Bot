@@ -62,7 +62,7 @@ async function handleMessage(sock, message) {
         
         if (messageText.toLowerCase() === 'prefix') {
   await sock.sendMessage(jid, { 
-    text: `┌\n📲𝐁𝐎𝐓 𝐏𝐑𝐄𝐅𝐈𝐗: ${config.bot.prefix}\n         ┘`
+    text: `┌\n📲𝐁𝐎𝐓 𝐏𝐑𝐄𝐅𝐈𝐗: ${config.bot.prefix}\n                ┘`
   }, { quoted: message });
   return;
 }
