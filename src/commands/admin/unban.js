@@ -1,35 +1,62 @@
+const User = require('../../models/user');
+
 module.exports = {
-    name: 'ban',
-    description: 'Ban a user from using the bot',
-    usage: '!ban @user [reason]',
-    category: 'admin',
-    adminOnly: true,
-    async execute(sock, message, args) {
-        const User = require('../../models/user');
-        
-        const mentioned = message.message.extendedTextMessage?.contextInfo?.mentionedJid[0];
-        if (!mentioned) {
-            await sock.sendMessage(message.key.remoteJid, { text: '❌ Please mention a user to ban' });
-            return;
-        }
+  name: 'warn',
+  description: 'Warn a user in the group. (Admin-only)',
+  usage: '!warn [reason]',
+  category: 'admin',
+  cooldown: 5,
+  adminOnly: true,
+  groupOnly: true,
+  botAdminRequired: false,
 
-        const user = await User.findOne({ jid: mentioned });
-        if (!user) {
-            await sock.sendMessage(message.key.remoteJid, { text: '❌ User not found in database' });
-            return;
-        }
+  async execute(sock, message, args) {
+    try {
+      const reason = args.join(' ');
+      const groupId = message.key.remoteJid;
+      const quotedMsg = message.message.extendedTextMessage;
 
-        if (user.isAdmin) {
-            await sock.sendMessage(message.key.remoteJid, { text: '❌ Cannot ban an admin' });
-            return;
-        }
-
-        user.isBanned = true;
-        user.banReason = args.slice(1).join(' ') || 'No reason provided';
-        await user.save();
-
-        await sock.sendMessage(message.key.remoteJid, { 
-            text: `✅ Successfully banned ${user.name}\nReason: ${user.banReason}` 
+      if (!quotedMsg) {
+        return await sock.sendMessage(groupId, {
+          text: '🐼Please reply to the user you want to warn.',
         });
+      }
+
+      const userId = quotedMsg.contextInfo.participant;
+      const userData = await User.findOne({ jid: userId });
+
+      if (!userData) {
+        return await sock.sendMessage(groupId, {
+          text: '🚫User not found.',
+        });
+      }
+
+      const warnLimit = 3;
+
+      let warns = userData.warns || 0;
+      warns++;
+
+      await User.updateOne({ jid: userId }, { warns });
+
+      const warningMessage = `╭──────────────────@\n${userId} has \n |been warned\n |‼️Warning times: ${warns}\n |Reason: ${reason}\n╰──────────────────`;
+
+      await sock.sendMessage(groupId, {
+        text: warningMessage,
+        mentions: [userId],
+      });
+
+      // Check if user exceeds warn limit
+      if (warns >= warnLimit) {
+        // Kick user and reset warns
+        await sock.groupParticipantsUpdate(groupId, [userId], 'remove');
+        await User.updateOne({ jid: userId }, { warns: 0 });
+        await sock.sendMessage(groupId, {
+          text: `╔⏤⏤⏤╝❀╚⏤⏤⏤╗\n𐌉𐌉@${userId} has\n 𐌉𐌉been kicked due to exceeding warning limit.\n╚⏤⏤⏤╗❀╔⏤⏤⏤╝`,
+          mentions: [userId],
+        });
+      }
+    } catch (error) {
+      console.error('Error executing !warn command:', error);
     }
+  },
 };
